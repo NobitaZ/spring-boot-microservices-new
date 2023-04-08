@@ -16,18 +16,20 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class OrderController {
 
-    private final OrderService orderService;
+  private final OrderService orderService;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    @CircuitBreaker(name = "inventory", fallbackMethod = "fallbackMethod")
-    @TimeLimiter(name = "inventory")
-    @Retry(name = "inventory")
-    public CompletableFuture<String> placeOrder(@RequestBody OrderRequest orderRequest) {
-        return CompletableFuture.supplyAsync(() -> orderService.placeOrder(orderRequest));
-    }
+  @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
+  @CircuitBreaker(name = "inventory", fallbackMethod = "fallbackMethod")
+  @TimeLimiter(name = "inventory")
+  @Retry(name = "inventory")
+  public CompletableFuture<String> placeOrder(@RequestBody OrderRequest orderRequest) {
+    return CompletableFuture.supplyAsync(() -> orderService.placeOrder(orderRequest));
+  }
 
-    public CompletableFuture<String> fallbackMethod(OrderRequest orderRequest, RuntimeException runtimeException) {
-        return CompletableFuture.supplyAsync(() -> "Oops! Something went wrong, please order after some time!");
-    }
+  public CompletableFuture<String> fallbackMethod(
+      OrderRequest orderRequest, RuntimeException runtimeException) {
+    return CompletableFuture.supplyAsync(
+        () -> "Oops! Something went wrong, please order after some time!");
+  }
 }
